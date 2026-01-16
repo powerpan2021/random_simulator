@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>抽卡模拟器</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      text-align: center;
+      padding-top: 40px;
+    }
+
+    .card {
+      width: 220px;
+      height: 140px;
+      margin: 20px auto;
+      background: #2c3e50;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 48px;
+      font-weight: bold;
+      animation: shake 0.15s infinite alternate;
+    }
+
+    @keyframes shake {
+      from { transform: translateX(-3px); }
+      to   { transform: translateX(3px); }
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 16px;
+    }
+
+    input {
+      padding: 8px;
+      width: 120px;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>随机抽卡模拟器</h2>
+
+  <div id="card" class="card">???</div>
+
+  <button onclick="startDraw()">Start</button>
+  <button onclick="reset()">Reset</button>
+
+  <div>
+    <input id="userInput" placeholder="输入你的卡片数字" />
+    <button onclick="compare()">比较</button>
+  </div>
+
+  <div id="result" class="result"></div>
+
+  <script>
+    let running = false
+    let finalNumber = null
+    let timer = null
+
+    function startDraw() {
+      if (running) return
+      running = true
+      finalNumber = null
+      document.getElementById('result').innerText = ''
+      document.getElementById('card').innerText = '???'
+
+      const startTime = Date.now()
+
+      timer = setInterval(() => {
+        if (Date.now() - startTime < 15000) {
+          const fake = Math.floor(Math.random() * 16) + 1
+          document.getElementById('card').innerText = fake
+        } else {
+          clearInterval(timer)
+          finalNumber = Math.floor(Math.random() * 16) + 1
+          document.getElementById('card').innerText = finalNumber
+          running = false
+        }
+      }, 80)
+    }
+
+    function compare() {
+      const input = parseInt(document.getElementById('userInput').value)
+      const result = document.getElementById('result')
+
+      if (finalNumber === null) {
+        result.innerText = '请先抽卡'
+        return
+      }
+
+      if (isNaN(input) || input < 1 || input > 16) {
+        result.innerText = '请输入 1~16 的整数'
+        return
+      }
+
+      if (input === finalNumber) {
+        result.innerText = '🎉 恭喜你，抽中了！'
+      } else {
+        result.innerText = '❌ 再来一次'
+      }
+    }
+
+    function reset() {
+      clearInterval(timer)
+      running = false
+      finalNumber = null
+      document.getElementById('card').innerText = '???'
+      document.getElementById('userInput').value = ''
+      document.getElementById('result').innerText = ''
+    }
+  </script>
+
+</body>
+</html>
